@@ -1,6 +1,5 @@
 import express from "express";
 import dotenv from "dotenv";
-import "express-async-errors";
 import userRouter from "./routes/userRoutes";
 import errorHandler from "./middlewares/errorHandler";
 
