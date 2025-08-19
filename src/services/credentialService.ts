@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import Cryptr from "cryptr";
-const cryptr = new Cryptr(process.env.CRYPTR_SECRET!);
+const cryptr = new Cryptr(process.env.CRYPTR_SECRET! as string);
 import { CredentialData } from "../protocols";
 import { deleteCredentialRepository, getCredentialById, getCredentialsByUserId, postCredentialRepository, putCredentialRepository } from "../repositories/credentialRepository";
 
