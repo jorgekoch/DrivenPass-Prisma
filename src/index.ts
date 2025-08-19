@@ -2,6 +2,8 @@ import express from "express";
 import dotenv from "dotenv";
 import userRouter from "./routes/userRoutes";
 import errorHandler from "./middlewares/errorHandler";
+import credentialRouter from "./routes/credentialRoutes";
+import eraseRouter from "./routes/eraseRoutes";
 
 
 dotenv.config();
@@ -14,6 +16,8 @@ app.get("/health", (req, res) => {
 });
 
 app.use(userRouter);
+app.use(credentialRouter);
+app.use(eraseRouter);
 
 app.use(errorHandler);
 
