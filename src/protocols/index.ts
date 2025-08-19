@@ -15,3 +15,7 @@ export type CredentialData = {
   password: string;
   url: string; 
 };
+
+export type AuthenticatedRequest = Request & {
+  userId?: number;
+};

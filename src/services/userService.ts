@@ -28,6 +28,6 @@ export async function signInService({ email, password }: { email: string; passwo
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) throw { type: "unauthorizedError", message: "Senha incorreta" };
 
-    const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: "1h" });
+    const token = jwt.sign({ userId: user.id }, JWT_SECRET);
     return token;
 }
