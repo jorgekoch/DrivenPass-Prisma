@@ -25,3 +25,14 @@ export async function getUserByEmail(email:string) {
     return result;
 }
 
+export async function deleteUserCredentialsRepository(userId: number) {
+  return prisma.credential.deleteMany({
+    where: { userId },
+  });
+}
+
+export async function deleteUserRepository(userId: number) {
+  return prisma.user.delete({
+    where: { id: userId },
+  });
+}

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { postSignUpService, signInService } from "../services/userService";
-import { UserData } from "../protocols";
+import { deleteUserService, postSignUpService, signInService } from "../services/userService";
+import { AuthenticatedRequest, UserData } from "../protocols";
 
 export async function postSignUp (req: Request, res: Response){
 
@@ -12,4 +12,12 @@ export async function signIn(req: Request, res: Response) {
     const { email, password } = req.body;
     const token = await signInService({ email, password });
     return res.status(200).json({ token });
+}
+
+export async function deleteUser(req: Request, res: Response) {
+  const { userId } = req as unknown as AuthenticatedRequest;
+
+  await deleteUserService(userId!);
+
+  return res.sendStatus(204);
 }

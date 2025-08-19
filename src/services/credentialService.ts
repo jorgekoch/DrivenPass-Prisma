@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import { CredentialData } from "../protocols";
-import { getCredentialsByUserId, postCredentialRepository, putCredentialRepository } from "../repositories/credentialRepository";
+import { deleteCredentialRepository, getCredentialById, getCredentialsByUserId, postCredentialRepository, putCredentialRepository } from "../repositories/credentialRepository";
 
 export async function postCredentialService(userId: number|undefined, credentialData: CredentialData){
     if (!userId) {
@@ -58,4 +58,26 @@ export async function putCredentialService(
   );
 
   return updatedCredential;
+};
+
+export async function deleteCredentialService (userId: number, credentialId: number,){
+  if (!userId) {
+    throw { type: "UNAUTHORIZED", message: "Usuário não autenticado" };
+  }
+
+  if (!credentialId) {
+    throw { type: "BAD_REQUEST", message: "ID da credencial inválido" };
+  }
+
+    const credential = await getCredentialById(credentialId);
+
+  if (!credential) {
+    throw { type: "NOT_FOUND", message: "Credencial não encontrada" };
+  }
+
+  if (credential.userId !== userId) {
+    throw { type: "UNAUTHORIZED", message: "Você não tem permissão para excluir esta credencial" };
+  }
+
+  await deleteCredentialRepository(credentialId);
 }

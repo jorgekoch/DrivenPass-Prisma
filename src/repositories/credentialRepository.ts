@@ -16,8 +16,8 @@ export async function getCredentialsByUserId(userId: number) {
     const result = await prisma.credential.findMany({
         where: {userId}
     })
-    return result
-;}
+    return result;
+};
 
 export async function putCredentialRepository(
     userId: number,
@@ -31,5 +31,16 @@ export async function putCredentialRepository(
         userId,
         },
     });
-}
+};
 
+export async function getCredentialById(id: number) {
+    return prisma.credential.findUnique({
+        where: { id },
+    });
+};
+
+export async function deleteCredentialRepository(id: number) {
+    return prisma.credential.delete({
+        where: { id },
+    });
+};

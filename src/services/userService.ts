@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { UserData } from "../protocols";
-import { getUserByEmail, postSignUpRepository } from "../repositories/userRepository";
+import { deleteUserCredentialsRepository, deleteUserRepository, getUserByEmail, postSignUpRepository } from "../repositories/userRepository";
 
 export async function postSignUpService(userData: UserData){
   const hashedPassword = await bcrypt.hash(userData.password, 10);
@@ -30,4 +30,14 @@ export async function signInService({ email, password }: { email: string; passwo
 
     const token = jwt.sign({ userId: user.id }, JWT_SECRET);
     return token;
+};
+
+export async function deleteUserService(userId: number) {
+  if (!userId) {
+    throw { type: "UNAUTHORIZED", message: "Usuário não autenticado" };
+  }
+
+  await deleteUserCredentialsRepository(userId);
+
+  await deleteUserRepository(userId);
 }
