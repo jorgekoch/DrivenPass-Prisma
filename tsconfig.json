@@ -5,6 +5,8 @@
     "module": "CommonJS",
     "baseUrl": "src",
     "moduleResolution": "node"
-
+  },
+  "ts-node": {
+    "esm": true
   }
 }

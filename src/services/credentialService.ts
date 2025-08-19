@@ -1,4 +1,6 @@
 import bcrypt from "bcrypt";
+import Cryptr from "cryptr";
+const cryptr = new Cryptr(process.env.CRYPTR_SECRET!);
 import { CredentialData } from "../protocols";
 import { deleteCredentialRepository, getCredentialById, getCredentialsByUserId, postCredentialRepository, putCredentialRepository } from "../repositories/credentialRepository";
 
@@ -24,8 +26,11 @@ export async function getCredentialService(userId?:number) {
     if (!userId) {
         throw { status: 401, message: "Usuário não autenticado" };
     }
-    const result = await getCredentialsByUserId(userId);
-    return result;
+    const credentials = await getCredentialsByUserId(userId);
+    return credentials.map(c => ({
+    ...c,
+    password: cryptr.decrypt(c.password),
+  }));
 }
 
 export async function putCredentialService(
