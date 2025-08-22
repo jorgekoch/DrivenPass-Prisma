@@ -1,26 +1,36 @@
-import bcrypt from "bcrypt";
 import Cryptr from "cryptr";
 const cryptr = new Cryptr(process.env.CRYPTR_SECRET!);
-import { CredentialData } from "../protocols";
-import { deleteCredentialRepository, getCredentialById, getCredentialByIdAndUserId, getCredentialsByUserId, postCredentialRepository, putCredentialRepository } from "../repositories/credentialRepository";
+import {
+  deleteCredentialRepository,
+  getCredentialById,
+  getCredentialByIdAndUserId,
+  getCredentialsByUserId,
+  postCredentialRepository,
+  putCredentialRepository
+} from "../repositories/credentialRepository";
+import { Credential } from "@prisma/client";
 
-export async function postCredentialService(userId: number|undefined, credentialData: CredentialData){
-    if (!userId) {
-        throw { type: "UNAUTHORIZED", message: "Usuário não autenticado" };
-    }
-    const existing = await getCredentialsByUserId(userId);
-    if (existing.some(credential => credential.title === credentialData.title)) {
-        throw { type: "USER_ALREADY_EXISTS", message: "Você já possui uma credential com este título" };
-    }
+export async function postCredentialService(
+  userId: number | undefined,
+  credentialData: Omit<Credential, "id" | "userId">
+) {
+  if (!userId) {
+    throw { type: "UNAUTHORIZED", message: "Usuário não autenticado" };
+  }
 
-    const hashedPassword = await bcrypt.hash(credentialData.password, 10);
+  const existing = await getCredentialsByUserId(userId);
+  if (existing.some(credential => credential.title === credentialData.title)) {
+    throw { type: "USER_ALREADY_EXISTS", message: "Você já possui uma credential com este título" };
+  }
 
-    const newCredentialData  = { ...credentialData, password: hashedPassword };
+  const encryptedPassword = cryptr.encrypt(credentialData.password);
 
-    const newCredential = await postCredentialRepository(userId, newCredentialData );
+  const newCredentialData = { ...credentialData, password: encryptedPassword };
 
-    return newCredential;
-};
+  const newCredential = await postCredentialRepository(userId, newCredentialData);
+
+  return newCredential;
+}
 
 export async function getCredentialService(
   userId: number | undefined,
@@ -47,7 +57,7 @@ export async function getCredentialService(
 export async function putCredentialService(
   userId: number,
   credentialId: number,
-  credentialData: CredentialData
+  credentialData: Omit<Credential, "id" | "userId">
 ) {
   if (!userId) {
     throw { type: "UNAUTHORIZED", message: "Usuário não autenticado" };
@@ -63,9 +73,9 @@ export async function putCredentialService(
     throw { type: "CONFLICT", message: "Você já possui uma credential com este título" };
   }
 
-  const hashedPassword = await bcrypt.hash(credentialData.password, 10);
+  const encryptedPassword = cryptr.encrypt(credentialData.password);
 
-  const updatedCredentialData = { ...credentialData, password: hashedPassword };
+  const updatedCredentialData = { ...credentialData, password: encryptedPassword };
 
   const updatedCredential = await putCredentialRepository(
     userId,
@@ -74,9 +84,12 @@ export async function putCredentialService(
   );
 
   return updatedCredential;
-};
+}
 
-export async function deleteCredentialService (userId: number, credentialId: number,){
+export async function deleteCredentialService(
+  userId: number,
+  credentialId: number,
+) {
   if (!userId) {
     throw { type: "UNAUTHORIZED", message: "Usuário não autenticado" };
   }
@@ -85,7 +98,7 @@ export async function deleteCredentialService (userId: number, credentialId: num
     throw { type: "BAD_REQUEST", message: "ID da credencial inválido" };
   }
 
-    const credential = await getCredentialById(credentialId);
+  const credential = await getCredentialById(credentialId);
 
   if (!credential) {
     throw { type: "NOT_FOUND", message: "Credencial não encontrada" };
