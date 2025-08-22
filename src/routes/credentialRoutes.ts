@@ -7,7 +7,7 @@ import { authenticateToken } from "../middlewares/authMiddleware";
 const credentialRouter = Router();
 
 credentialRouter.post("/credentials", authenticateToken , validateSchema(credentialSchema), postCredential)
-credentialRouter.get("/credentials", authenticateToken, getCredential)
+credentialRouter.get("/credentials/:id", authenticateToken, getCredential)
 credentialRouter.put("/credentials/:id", authenticateToken, validateSchema(credentialSchema), putCredential)
 credentialRouter.delete("/credentials/:id", authenticateToken, deleteCredential)
 

@@ -9,10 +9,13 @@ export async function postCredential(req: Request, res: Response) {
     return res.status(201).send(result);
 }
 
+
 export async function getCredential(req: Request, res: Response) {
-    const { userId } = req as unknown as AuthenticatedRequest;
-    const result = await getCredentialService(userId);
-    return res.status(200).send(result);
+  const { userId } = req as unknown as AuthenticatedRequest;
+  const credentialId = Number(req.params.id);
+
+  const result = await getCredentialService(userId, credentialId);
+  return res.status(200).send(result);
 }
 
 

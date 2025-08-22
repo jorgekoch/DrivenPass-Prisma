@@ -1,9 +1,9 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { UserData } from "../protocols";
 import { deleteUserCredentialsRepository, deleteUserRepository, getUserByEmail, postSignUpRepository } from "../repositories/userRepository";
+import { User } from "@prisma/client";
 
-export async function postSignUpService(userData: UserData){
+export async function postSignUpService(userData: Omit<User, "id">){
   const hashedPassword = await bcrypt.hash(userData.password, 10);
 
   const newUserData = { ...userData, password: hashedPassword };

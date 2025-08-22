@@ -1,7 +1,7 @@
+import { Credential } from "@prisma/client";
 import prisma from "../database";
-import { CredentialData } from "../protocols"; 
 
-export async function postCredentialRepository(userId: number, credentialData: CredentialData) {
+export async function postCredentialRepository(userId: number, credentialData: Omit<Credential, "id" | "userId">) {
     const result = await prisma.credential.create({
         data: {
             ...credentialData, 
@@ -19,10 +19,16 @@ export async function getCredentialsByUserId(userId: number) {
     return result;
 };
 
+export async function getCredentialByIdAndUserId(id: number, userId: number) {
+  return prisma.credential.findFirst({
+    where: { id, userId },
+  });
+}
+
 export async function putCredentialRepository(
     userId: number,
     credentialId: number,
-    credentialData: CredentialData
+    credentialData: Omit<Credential, "id" | "userId">
 ) {
     return await prisma.credential.update({
         where: { id: credentialId },

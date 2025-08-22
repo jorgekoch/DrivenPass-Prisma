@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
 import { deleteUserService, postSignUpService, signInService } from "../services/userService";
-import { AuthenticatedRequest, UserData } from "../protocols";
+import { AuthenticatedRequest } from "../protocols";
+import { User } from "@prisma/client";
 
 export async function postSignUp (req: Request, res: Response){
 
-    const signup = await postSignUpService(req.body as UserData);
+    const signup = await postSignUpService(req.body as Omit<User, "id">);
     return res.status(201).send(signup);
 }
 

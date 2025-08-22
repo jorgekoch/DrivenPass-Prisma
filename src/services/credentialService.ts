@@ -1,8 +1,8 @@
 import bcrypt from "bcrypt";
 import Cryptr from "cryptr";
-const cryptr = new Cryptr(process.env.CRYPTR_SECRET || "fallbackSecret");
+const cryptr = new Cryptr(process.env.CRYPTR_SECRET!);
 import { CredentialData } from "../protocols";
-import { deleteCredentialRepository, getCredentialById, getCredentialsByUserId, postCredentialRepository, putCredentialRepository } from "../repositories/credentialRepository";
+import { deleteCredentialRepository, getCredentialById, getCredentialByIdAndUserId, getCredentialsByUserId, postCredentialRepository, putCredentialRepository } from "../repositories/credentialRepository";
 
 export async function postCredentialService(userId: number|undefined, credentialData: CredentialData){
     if (!userId) {
@@ -22,15 +22,26 @@ export async function postCredentialService(userId: number|undefined, credential
     return newCredential;
 };
 
-export async function getCredentialService(userId?:number) {
-    if (!userId) {
-        throw { status: 401, message: "Usuário não autenticado" };
-    }
-    const credentials = await getCredentialsByUserId(userId);
-    return credentials.map(c => ({
-    ...c,
-    password: cryptr.decrypt(c.password),
-  }));
+export async function getCredentialService(
+  userId: number | undefined,
+  credentialId: number
+) {
+  if (!userId) {
+    throw { status: 401, message: "Usuário não autenticado" };
+  }
+
+  const credential = await getCredentialByIdAndUserId(credentialId, userId);
+
+  console.log("DEBUG getCredentialService:", { userId, credentialId, credential });
+
+  if (!credential) {
+    throw { status: 404, message: "Credencial não encontrada" };
+  }
+
+  return {
+    ...credential,
+    password: cryptr.decrypt(credential.password),
+  };
 }
 
 export async function putCredentialService(

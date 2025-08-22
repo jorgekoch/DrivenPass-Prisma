@@ -1,7 +1,7 @@
+import { User } from "@prisma/client";
 import prisma from "../database";
-import { UserData } from "../protocols";
 
-export async function postSignUpRepository(userData: UserData){
+export async function postSignUpRepository(userData: Omit<User, "id">){
     const result = await getUserByEmail(userData.email);
     if (result) {
         return null
