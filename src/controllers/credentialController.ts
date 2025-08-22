@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
 import { postCredentialService, getCredentialService, putCredentialService, deleteCredentialService } from "../services/credentialService";
-import { AuthenticatedRequest, CredentialData } from "../protocols";
+import { AuthenticatedRequest } from "../protocols";
+import { Credential } from "@prisma/client";
 
 export async function postCredential(req: Request, res: Response) {
     const { userId } = req as unknown as AuthenticatedRequest;
-    const credentialData = req.body as CredentialData;
+    const credentialData = req.body as Omit<Credential, "id" | "userId">;
     const result = await postCredentialService(userId, credentialData);
     return res.status(201).send(result);
 }
